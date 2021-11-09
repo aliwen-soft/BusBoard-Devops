@@ -1,0 +1,26 @@
+<html>
+    <head>  
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
+    </head>
+    <body>
+        <h1 class="display-3 text-center" >
+            🚌 BusBoard 🚌
+        </h1>
+        <div class="container">
+        {% for bus_stop in bus_stops %}
+        <div>
+            <h2>{{bus_stop}}</h2>
+             <table class="table table-bordered table-striped">
+             {% for bus_line in bus_data[bus_stop] %}
+            <tr>
+                <td>
+                    {{bus_line["line"]}} leaving at {{bus_line["expected_departure_time"]}}
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+        </div>
+        {% endfor %}
+        </div>
+    </body>
+</html>

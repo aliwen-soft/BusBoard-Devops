@@ -16,12 +16,16 @@ auth_params = {
 }
 
 
-def get_bus_stop_names_and_atco_code(postcode):
-    #stub
-    return [
-        ("Lady Somerset Road GY", "490008660N"),
-        ("Kentish Town Fire Station", "490008660S"),
-        ]
+def get_bus_stop_names_and_atco_code(latitude, longitude):
+    path = f'{base_api}/uk/places.json?lat={latitude}&lon={longitude}&type=bus_stop'
+    json = requests.get(path, params=auth_params).json()["member"]
+
+    stops = []
+    for i in range(10):
+        stop_data = json[i]
+        stops.append((stop_data["name"], stop_data["atcocode"]))
+
+    return stops
 
 
 def get_bus_stop_data(atcocode):
@@ -45,11 +49,14 @@ def parse_bus_stop_data(departures_info):
     return buses
 
 
+def get_lat_and_long(postcode):
+    json = requests.get(f"https://api.postcodes.io/postcodes/{postcode}").json()["result"]
+    return json["latitude"], json["longitude"]
+
+
 def get_bus_stop_data_for_postcode(postcode):
-    data = {}
-    for name, atco_code in get_bus_stop_names_and_atco_code(postcode):
-        data[name] = parse_bus_stop_data(get_bus_stop_data(atco_code))
-
-    return data
-
-print(get_bus_stop_data_for_postcode("NW5 1TL"))
+    latitude, longitude = get_lat_and_long(postcode)
+    return {
+        name: parse_bus_stop_data(get_bus_stop_data(atco_code))
+        for name, atco_code in get_bus_stop_names_and_atco_code(latitude, longitude)
+    }
